@@ -1,15 +1,53 @@
-import time
-import pandas as pd
-from bs4 import BeautifulSoup
-from selenium.webdriver.common.by import By
-from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.keys import Keys
 from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.common.by import By
+from selenium import webdriver
+import pandas as pd
+import time
 
 a = Service(ChromeDriverManager().install())
 opc = Options()
 opc.add_argument("--window-size=700,620")
+
+data = []
+
+years = [str(year) for year in range(2011, 2023)]
+
 navegador = webdriver.Chrome(service=a, options=opc)
-navegador.get("https://www.inegi.org.mx/sistemas/olap/proyectos/bd/continuas/mortalidad/defuncioneshom.asp?s=est&fbclid=IwAR1kKPjPPHvR-lfAfey1c9T2CjT8o0rSfKRmSpgPXYMjH-cyBNMwHEVUOtw")
+navegador.get("https://www.inegi.org.mx/temas/incidencia/")
+
+time.sleep(5)
+
+time.sleep(5)
+
+entidades = navegador.find_elements(By.CLASS_NAME, "TdInicio")
+
+for entidad in entidades:
+    entidad_text = entidad.text.strip()
+
+    # Si la entidad es una descripción de delito, la ignoramos
+    if entidad_text.endswith("/1") or entidad_text.endswith("/2") or entidad_text.endswith("/3"):
+        continue
+
+    entidad_data = {"Entidad": entidad_text}
+
+    # Encontrar los datos correspondientes a la entidad
+    entidad_datos = entidad.find_elements(By.XPATH, "following-sibling::td[@class='Td']")
+
+    # Procesar y agregar los datos al diccionario de la entidad
+    for i, tasa_element in enumerate(entidad_datos):
+        if i < len(years):
+            tasa_incidente_text = tasa_element.text.strip().replace(",", "")
+            entidad_data[years[i]] = tasa_incidente_text
+
+    data.append(entidad_data)
+
+# Cerrar el navegador
+navegador.quit()
+
+# Crear DataFrame y guardar datos en CSV
+df = pd.DataFrame(data)
+df.to_csv('datasets/incidencia_delictiva_mexico.csv', index=False)
+print("Datos guardados en 'incidencia_delictiva_mexico.csv'")
+
