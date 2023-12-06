@@ -1,6 +1,0 @@
-Paso 1: Modificar el usuario y root para el acceso a MySQL
-Paso 2: Ejecutar la creación de base de datos y la creación de tablas
-Paso 3: Ejecutar el código de Python
-Paso 3: Ejecutar el llenado de tablas en MySQL
-Paso 4: Abrir: http://127.0.0.1:8050/
-Paso 5: ¡Interatuar!
