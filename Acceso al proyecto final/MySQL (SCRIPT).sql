@@ -3,7 +3,7 @@ USE CrimenesMex1;
 
 CREATE TABLE Estados(
    IdEstado INT PRIMARY KEY AUTO_INCREMENT
-  ,Estado VARCHAR(40)
+  ,Estado VARCHAR(255) UNIQUE
 );
 
 CREATE TABLE DatosAnuales(
